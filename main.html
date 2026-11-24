@@ -1,0 +1,193 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>DATA MIND AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#eef2fb;--fg:#0b1530;--mut:#5b6785;--card:rgba(255,255,255,.72);--bd:rgba(70,100,200,.22);--ac:#2f6bff;--ac2:#8b4dff;--cy:#00b8d9;--bad:#e5484d;--ok:#12a594}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#050914;--fg:#e8eeff;--mut:#8f9bc0;--card:rgba(20,30,66,.55);--bd:rgba(120,150,255,.2)}}
+:root[data-theme="dark"]{--bg:#050914;--fg:#e8eeff;--mut:#8f9bc0;--card:rgba(20,30,66,.55);--bd:rgba(120,150,255,.2)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;background-image:radial-gradient(600px 400px at 10% 0,rgba(47,107,255,.25),transparent),radial-gradient(500px 400px at 100% 20%,rgba(139,77,255,.22),transparent),radial-gradient(400px 300px at 50% 100%,rgba(0,184,217,.18),transparent);background-attachment:fixed}
+.app{display:flex;min-height:100vh}
+nav{width:200px;padding:16px 10px;border-right:1px solid var(--bd);background:var(--card);backdrop-filter:blur(14px);position:sticky;top:0;height:100vh;flex-shrink:0}
+.logo{font-weight:800;font-size:17px;padding:4px 10px 14px;background:linear-gradient(90deg,var(--ac),var(--ac2),var(--cy));-webkit-background-clip:text;background-clip:text;color:transparent}
+nav button{display:block;width:100%;text-align:left;border:0;background:none;color:var(--fg);padding:9px 12px;border-radius:10px;cursor:pointer;font:inherit;margin-bottom:3px;transition:.2s}
+nav button:hover{background:rgba(47,107,255,.12);transform:translateX(3px)}nav button.on{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff}
+main{flex:1;padding:22px;min-width:0;max-width:1200px;animation:fi .35s}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+h1{margin:0 0 4px;font-size:24px}h2{font-size:16px;margin:0 0 10px}.sub{color:var(--mut);margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px;backdrop-filter:blur(14px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;transition:.2s}.kpi:hover{transform:translateY(-3px);border-color:var(--ac)}
+.kpi b{display:block;font-size:26px;background:linear-gradient(90deg,var(--ac),var(--cy));-webkit-background-clip:text;background-clip:text;color:transparent}.kpi span{color:var(--mut);font-size:12px}
+button.b,select,input,textarea{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:7px 11px}
+button.b{cursor:pointer;transition:.2s}button.b:hover{border-color:var(--ac);transform:translateY(-1px)}
+button.p{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff;border:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.drop{border:2px dashed var(--bd);border-radius:16px;padding:26px;text-align:center;color:var(--mut);cursor:pointer}.drop.h{border-color:var(--ac);background:rgba(47,107,255,.1)}
+.tw{overflow-x:auto;max-width:100%}table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{border-bottom:1px solid var(--bd);padding:5px 9px;text-align:left;white-space:nowrap}th{color:var(--mut);font-weight:600}
+td[contenteditable]:focus,th[contenteditable]:focus{outline:2px solid var(--ac)}
+.tag{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11px;background:rgba(47,107,255,.15);color:var(--ac)}
+.bad{color:var(--bad)}.ok{color:var(--ok)}.mut{color:var(--mut)}
+.msgs{max-height:55vh;overflow:auto}.m{padding:9px 13px;border-radius:14px;margin:8px 0;max-width:92%}
+.m.u{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff;margin-left:auto;width:fit-content}.m.a{background:var(--card);border:1px solid var(--bd)}
+canvas{max-width:100%}.cv{position:relative;height:340px}
+ul{padding-left:18px;margin:6px 0}li{margin:4px 0}
+#bar{height:3px;background:linear-gradient(90deg,var(--ac),var(--cy));width:0;position:fixed;top:0;left:0;transition:width .3s;z-index:9}
+@media(max-width:760px){.app{flex-direction:column}nav{width:100%;height:auto;position:static;display:flex;overflow-x:auto;gap:4px;padding:8px}nav button{white-space:nowrap;width:auto}.logo{display:none}}
+@media print{nav,.noprint{display:none!important}body{background:#fff;color:#000}.card{background:#fff;border-color:#ccc}}
+</style></head><body><div id="bar"></div>
+<div class="app"><nav id="nav"></nav><main id="main"></main></div>
+<script>
+const $=s=>document.querySelector(s),E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const TABS=[['dash','Dashboard'],['data','Data Input'],['clean','Cleaning Studio'],['analyze','AI Analysis'],['viz','Visualization'],['chat','AI Data Chat'],['report','Report']];
+let S={ds:[],cur:null,tab:'dash',theme:null},U=[],R=[],charts=[];
+try{S=Object.assign(S,JSON.parse(localStorage.getItem('dm')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('dm',JSON.stringify(S))}catch(e){}};
+const D=()=>S.ds.find(d=>d.id===S.cur);
+const isE=v=>v===''||v==null;
+const N=v=>{if(typeof v==='number')return v;const s=String(v??'').replace(/[,$%\s]/g,'');return s===''?NaN:Number(s)};
+const f=x=>Number.isFinite(x)?(Math.abs(x)>=1000?x.toLocaleString(undefined,{maximumFractionDigits:1}):+x.toFixed(3)):'–';
+function csv(t){const d=['\t',',',';','|'].map(c=>[c,(t.split('\n')[0].split(c).length)]).sort((a,b)=>b[1]-a[1])[0][0];const rows=[];let r=[],c='',q=false;
+for(let i=0;i<t.length;i++){const ch=t[i];if(q){if(ch=='"'&&t[i+1]=='"'){c+='"';i++}else if(ch=='"')q=false;else c+=ch}else if(ch=='"')q=true;else if(ch==d){r.push(c);c=''}else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;r.push(c);c='';rows.push(r);r=[]}else c+=ch}
+if(c!==''||r.length){r.push(c);rows.push(r)}return rows.filter(r=>r.some(x=>x.trim()!==''))}
+function mk(name,head,rows,desc=''){const w=head.length;rows=rows.map(r=>{r=r.slice(0,w);while(r.length<w)r.push('');return r});
+const d={id:Date.now()+''+Math.floor(Math.random()*999),name,desc,cols:head.map((h,i)=>String(h||'Column '+(i+1)).trim()),rows,created:new Date().toLocaleString(),ver:1};
+d.orig=JSON.stringify({cols:d.cols,rows:d.rows});S.ds.unshift(d);S.cur=d.id;save();return d}
+function info(d){return d.cols.map((c,j)=>{const v=d.rows.map(r=>r[j]),ne=v.filter(x=>!isE(x)),nums=ne.map(N).filter(Number.isFinite);let t='cat';
+if(ne.length&&nums.length>=.9*ne.length)t='num';else if(ne.length&&ne.filter(x=>/[-\/]/.test(x)&&!isNaN(Date.parse(x))).length>=.9*ne.length)t='date';
+const o={c,j,t,miss:v.length-ne.length,n:ne.length,uniq:new Set(ne).size};
+if(t==='num'){const s=nums.slice().sort((a,b)=>a-b),m=nums.reduce((a,b)=>a+b,0)/nums.length,q=p=>{const i=(s.length-1)*p,l=Math.floor(i);return s[l]+(s[Math.min(l+1,s.length-1)]-s[l])*(i-l)};
+o.mean=m;o.sd=Math.sqrt(nums.reduce((a,b)=>a+(b-m)**2,0)/Math.max(1,nums.length-1));o.min=s[0];o.max=s[s.length-1];o.q1=q(.25);o.med=q(.5);o.q3=q(.75);o.sum=nums.reduce((a,b)=>a+b,0);
+const iq=o.q3-o.q1;o.lo=o.q1-1.5*iq;o.hi=o.q3+1.5*iq;o.out=[];v.forEach((x,i)=>{const n=N(x);if(Number.isFinite(n)&&(n<o.lo||n>o.hi))o.out.push(i)});
+const cnt={};nums.forEach(x=>cnt[x]=(cnt[x]||0)+1);o.mode=+Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0][0]}
+else{const cnt={};ne.forEach(x=>cnt[x]=(cnt[x]||0)+1);o.top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])}
+return o})}
+const dups=d=>{const s=new Set();let n=0;d.rows.forEach(r=>{const k=JSON.stringify(r);s.has(k)?n++:s.add(k)});return n};
+function quality(d,I){const cells=d.rows.length*d.cols.length||1,miss=I.reduce((a,c)=>a+c.miss,0),out=I.reduce((a,c)=>a+(c.out?c.out.length:0),0);
+return Math.max(0,Math.round(100-miss/cells*100-dups(d)/Math.max(1,d.rows.length)*100-out/Math.max(1,d.rows.length)*10))}
+function corr(d,I){const nc=I.filter(c=>c.t==='num'),M=nc.map(a=>nc.map(b=>{const p=d.rows.map(r=>[N(r[a.j]),N(r[b.j])]).filter(x=>x.every(Number.isFinite));if(p.length<3)return NaN;
+const mx=p.reduce((s,x)=>s+x[0],0)/p.length,my=p.reduce((s,x)=>s+x[1],0)/p.length;let sxy=0,sx=0,sy=0;p.forEach(([x,y])=>{sxy+=(x-mx)*(y-my);sx+=(x-mx)**2;sy+=(y-my)**2});return sxy/Math.sqrt(sx*sy)}));return{nc,M}}
+function group(d,xi,yi,agg){const g={};d.rows.forEach(r=>{const k=r[xi];if(isE(k))return;const y=N(r[yi]);(g[k]=g[k]||[]).push(y)});
+return Object.entries(g).map(([k,a])=>{const v=a.filter(Number.isFinite);return[k,agg==='count'?a.length:!v.length?0:agg==='mean'?v.reduce((s,x)=>s+x,0)/v.length:agg==='max'?Math.max(...v):v.reduce((s,x)=>s+x,0)]})}
+function trend(d,I){const dt=I.find(c=>c.t==='date'),y=I.find(c=>c.t==='num');if(!dt||!y)return null;const g=group(d,dt.j,y.j,'sum').sort((a,b)=>Date.parse(a[0])-Date.parse(b[0]));if(g.length<4)return null;
+const n=g.length,xs=g.map((_,i)=>i),ys=g.map(x=>x[1]),mx=(n-1)/2,my=ys.reduce((a,b)=>a+b,0)/n;let sxy=0,sxx=0,syy=0;xs.forEach((x,i)=>{sxy+=(x-mx)*(ys[i]-my);sxx+=(x-mx)**2;syy+=(ys[i]-my)**2});
+const b=sxy/sxx,a=my-b*mx;return{dt,y,g,b,a,r2:syy?sxy*sxy/(sxx*syy):0,next:[0,1,2].map(i=>a+b*(n+i))}}
+function insights(d,I){const o=[],nc=I.filter(c=>c.t==='num'),cc=I.filter(c=>c.t==='cat'&&c.uniq>1&&c.uniq<=30);
+o.push(`Finding: the dataset has ${d.rows.length} rows and ${d.cols.length} columns (${nc.length} numeric, ${cc.length} categorical, ${I.filter(c=>c.t==='date').length} date).`);
+const m=I.filter(c=>c.miss);if(m.length)o.push(`Finding: ${m.reduce((a,c)=>a+c.miss,0)} missing cells, mostly in “${m.sort((a,b)=>b.miss-a.miss)[0].c}”.`);
+const dp=dups(d);if(dp)o.push(`Finding: ${dp} duplicate rows.`);
+nc.forEach(c=>{if(c.out.length)o.push(`Finding: “${c.c}” has ${c.out.length} outlier(s) outside ${f(c.lo)}–${f(c.hi)} (IQR rule), e.g. ${f(N(d.rows[c.out[0]][c.j]))}.`)});
+if(cc[0]&&nc[0]){const g=group(d,cc[0].j,nc[0].j,'sum').sort((a,b)=>b[1]-a[1]);if(g.length>1)o.push(`Finding: by total “${nc[0].c}”, top “${cc[0].c}” is ${g[0][0]} (${f(g[0][1])}); lowest is ${g[g.length-1][0]} (${f(g[g.length-1][1])}).`)}
+const {nc:k,M}=corr(d,I);let best=[];M.forEach((r,i)=>r.forEach((v,j)=>{if(j>i&&Math.abs(v)>=.6)best.push([k[i].c,k[j].c,v])}));best.sort((a,b)=>Math.abs(b[2])-Math.abs(a[2])).slice(0,3).forEach(b=>o.push(`Finding: “${b[0]}” and “${b[1]}” are ${b[2]>0?'positively':'negatively'} correlated (r=${f(b[2])}). Correlation does not prove causation.`));
+const t=trend(d,I);if(t)o.push(`Finding: “${t.y.c}” over “${t.dt.c}” moves ${t.b>0?'up':'down'} about ${f(Math.abs(t.b))} per period (R²=${f(t.r2)}). Prediction (linear, not guaranteed): next 3 periods ≈ ${t.next.map(f).join(', ')}.`);
+return o}
+function cap(){return D()?null:'<div class="card"><h2>No dataset selected</h2><p class="mut">Go to Data Input and upload, paste, or load a sample dataset.</p></div>'}
+function rng(s){return()=>(s=(s*16807)%2147483647)/2147483647}
+const SAMPLES={'Sales analytics':()=>{const r=rng(7),h=['Month','Product','Region','Units','Revenue'],rows=[];['Laptop','Phone','Tablet','Watch'].forEach((p,pi)=>['North','South','East','West'].forEach(g=>{for(let m=1;m<=12;m+=2){const u=Math.round(20+r()*60+m*(2+pi)*.8);rows.push(['2025-'+String(m).padStart(2,'0')+'-01',p,g,u,Math.round(u*(300+pi*250)*(.9+r()*.2))])}}));rows[5][4]=98000;rows[9][3]='';return[h,rows]},
+'Student performance':()=>{const r=rng(11),rows=[];for(let i=1;i<=60;i++){const s=+(1+r()*9).toFixed(1),a=Math.round(60+r()*40);rows.push(['Student '+i,['A','B','C'][i%3],s,a,Math.round(Math.min(100,25+s*5+a*.2+r()*12))])}return[['Name','Class','StudyHours','Attendance','Score'],rows]},
+'Marketing campaigns':()=>{const r=rng(5),rows=[];for(let i=0;i<40;i++){const sp=Math.round(500+r()*5000),cl=Math.round(sp*(.4+r()*.5)),cv=Math.round(cl*(.02+r()*.06));rows.push([['Email','Social','Search','Video'][i%4],sp,cl,cv,cv*(40+Math.round(r()*30))])}return[['Channel','Spend','Clicks','Conversions','Revenue'],rows]},
+'Population statistics':()=>{const r=rng(3),rows=['Delhi','Mumbai','Chennai','Kolkata','Pune','Jaipur','Surat','Lucknow','Kanpur','Nagpur'].map(c=>{const p=Math.round(1+r()*20);return[c,p*1e6,Math.round(r()*5e3+3e3),+(70+r()*25).toFixed(1)]});return[['City','Population','Density','LiteracyRate'],rows]}};
+function snap(){U.push(JSON.stringify({cols:D().cols,rows:D().rows}));if(U.length>30)U.shift();R=[]}
+function setSnap(s){const o=JSON.parse(s),d=D();d.cols=o.cols;d.rows=o.rows;save()}
+function prog(p){$('#bar').style.width=p+'%';if(p>=100)setTimeout(()=>$('#bar').style.width=0,400)}
+function loadFile(file){if(!file)return;const ext=file.name.split('.').pop().toLowerCase();if(!['csv','xls','xlsx','json','txt','tsv'].includes(ext)||file.size>15e6)return alert('Unsupported file or larger than 15 MB. Use CSV, XLS, XLSX or JSON.');
+const rd=new FileReader();rd.onprogress=e=>prog(e.loaded/e.total*80);rd.onerror=()=>alert('Could not read file.');
+rd.onload=()=>{try{let h,rows;if(ext=='json'){let j=JSON.parse(rd.result);if(!Array.isArray(j))j=j.data||j.rows||Object.values(j).find(Array.isArray);if(!Array.isArray(j)||!j.length)throw 0;h=[...new Set(j.flatMap(o=>Object.keys(o)))];rows=j.map(o=>h.map(k=>o[k]??''))}
+else if(ext=='xls'||ext=='xlsx'){const wb=XLSX.read(rd.result,{type:'array'});let sn=wb.SheetNames[0];if(wb.SheetNames.length>1){const c=prompt('Sheets: '+wb.SheetNames.join(', ')+'\nType a sheet name:',sn);if(wb.SheetNames.includes(c))sn=c}const a=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});h=a[0];rows=a.slice(1).filter(r=>r.some(x=>x!==''))}
+else{const a=csv(rd.result);h=a[0];rows=a.slice(1)}
+if(!rows.length)throw 0;mk(file.name.replace(/\.\w+$/,''),h,rows,(file.size/1024).toFixed(1)+' KB');prog(100);go('analyze')}catch(e){prog(100);alert('Invalid or empty file. Check the format and try again.')}};
+ext=='xls'||ext=='xlsx'?rd.readAsArrayBuffer(file):rd.readAsText(file)}
+function go(t){S.tab=t;charts.forEach(c=>c.destroy());charts=[];render()}
+function render(){document.documentElement.dataset.theme=S.theme||'';$('#nav').innerHTML='<div class="logo">◈ DATA MIND AI</div>'+TABS.map(([k,v])=>`<button class="${S.tab==k?'on':''}" onclick="go('${k}')">${v}</button>`).join('')+`<button onclick="S.theme=(S.theme=='dark'||(!S.theme&&matchMedia('(prefers-color-scheme:dark)').matches))?'light':'dark';save();render()">◐ Theme</button>`;
+$('#main').innerHTML=V[S.tab]();$('#main').style.animation='none';void $('#main').offsetWidth;$('#main').style.animation='';(A[S.tab]||(()=>{}))()}
+const V={},A={};
+V.dash=()=>{const d=D(),I=d?info(d):[],rows=S.ds.reduce((a,x)=>a+x.rows.length,0),cols=S.ds.reduce((a,x)=>a+x.cols.length,0),out=I.reduce((a,c)=>a+(c.out?c.out.length:0),0);
+return`<h1>Dashboard</h1><div class="sub">Everything below is computed from your actual datasets.</div><div class="grid">
+<div class="kpi"><b>${S.ds.length}</b><span>Datasets</span></div><div class="kpi"><b>${rows.toLocaleString()}</b><span>Total rows</span></div><div class="kpi"><b>${cols}</b><span>Total columns</span></div>
+<div class="kpi"><b>${d?quality(d,I):'–'}</b><span>Quality score (selected)</span></div><div class="kpi"><b>${d?out:'–'}</b><span>Outliers (selected)</span></div></div>
+<div class="card"><h2>Datasets</h2>${S.ds.length?`<div class="row"><input id="q" placeholder="Search datasets…" oninput="dsl()"><select id="so" onchange="dsl()"><option>Newest</option><option>Name</option><option>Rows</option></select></div><div id="dl"></div>`:'<p class="mut">No datasets yet. Load a sample in Data Input to get started.</p>'}</div>
+${d?`<div class="card"><h2>AI insights · ${E(d.name)}</h2><ul>${insights(d,I).slice(0,5).map(x=>`<li>${E(x)}</li>`).join('')}</ul></div>`:''}`};
+A.dash=()=>{if(S.ds.length)dsl()};
+function dsl(){const q=($('#q').value||'').toLowerCase(),s=$('#so').value;let a=S.ds.filter(d=>d.name.toLowerCase().includes(q));if(s=='Name')a.sort((x,y)=>x.name.localeCompare(y.name));if(s=='Rows')a.sort((x,y)=>y.rows.length-x.rows.length);
+$('#dl').innerHTML=`<div class="tw"><table><tr><th>Name</th><th>Rows</th><th>Cols</th><th>Version</th><th>Created</th><th></th></tr>${a.map(d=>`<tr><td>${d.id==S.cur?'● ':''}${E(d.name)}</td><td>${d.rows.length}</td><td>${d.cols.length}</td><td>v${d.ver}</td><td>${d.created}</td><td><button class="b" onclick="S.cur='${d.id}';save();go('analyze')">Open</button> <button class="b" onclick="dup('${d.id}')">Duplicate</button> <button class="b" onclick="del(this,'${d.id}')">Delete</button></td></tr>`).join('')}</table></div>`}
+function dup(id){const d=S.ds.find(x=>x.id==id),n=JSON.parse(JSON.stringify(d));n.id=Date.now()+'';n.name+=' (copy)';S.ds.unshift(n);save();render()}
+function del(b,id){if(b.dataset.s){S.ds=S.ds.filter(d=>d.id!=id);if(S.cur==id)S.cur=S.ds[0]?.id;save();render()}else{b.dataset.s=1;b.textContent='Confirm?'}}
+V.data=()=>{const d=D();return`<h1>Data Input</h1><div class="sub">Upload, paste, type, or load a sample. Everything stays in your browser in this preview.</div>
+<div class="card"><h2>Upload file</h2><div class="drop" id="dz" onclick="$('#fi').click()">Drag & drop CSV, XLS, XLSX or JSON here, or click to browse</div><input id="fi" type="file" accept=".csv,.xls,.xlsx,.json,.tsv,.txt" hidden></div>
+<div class="card"><h2>Paste data</h2><textarea id="pt" rows="4" style="width:100%" placeholder="Paste rows from Excel, CSV, or TSV (first row = headers)"></textarea><div class="row" style="margin-top:8px"><input id="pn" placeholder="Dataset name"><button class="b p" onclick="pasteIt()">Load pasted data</button><button class="b" onclick="blank()">New blank table</button></div></div>
+<div class="card"><h2>Sample datasets</h2><div class="row">${Object.keys(SAMPLES).map(k=>`<button class="b" onclick="samp('${k}')">${k}</button>`).join('')}</div></div>
+${d?`<div class="card"><h2>${E(d.name)} <span class="tag">${d.rows.length} rows</span></h2><div class="row noprint"><button class="b" onclick="addR()">+ Row</button><button class="b" onclick="addC()">+ Column</button><button class="b" onclick="cpy()">Copy as CSV</button><span class="mut">Click any cell or header to edit. Showing up to 100 rows.</span></div><div class="tw"><table id="tb"></table></div></div>`:''}`};
+A.data=()=>{const dz=$('#dz');['dragover','dragenter'].forEach(e=>dz.addEventListener(e,x=>{x.preventDefault();dz.classList.add('h')}));['dragleave','drop'].forEach(e=>dz.addEventListener(e,x=>{x.preventDefault();dz.classList.remove('h')}));dz.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));$('#fi').onchange=e=>loadFile(e.target.files[0]);tbl()};
+function tbl(){const d=D(),t=$('#tb');if(!t)return;t.innerHTML='<tr><th></th>'+d.cols.map((c,j)=>`<th contenteditable data-j="${j}">${E(c)}</th>`).join('')+'</tr>'+d.rows.slice(0,100).map((r,i)=>`<tr><td><a style="cursor:pointer" onclick="delR(${i})">✕</a></td>${r.map((v,j)=>`<td contenteditable data-i="${i}" data-j="${j}">${E(v)}</td>`).join('')}</tr>`).join('');
+t.querySelectorAll('[contenteditable]').forEach(c=>c.onblur=()=>{const j=+c.dataset.j,v=c.textContent;if(c.dataset.i===undefined){if(d.cols[j]!==v){snap();d.cols[j]=v||'Column '+(j+1)}}else{const i=+c.dataset.i;if(String(d.rows[i][j])!==v){snap();d.rows[i][j]=v}}save()})}
+const addR=()=>{snap();D().rows.push(D().cols.map(()=>''));save();tbl()},delR=i=>{snap();D().rows.splice(i,1);save();tbl()},addC=()=>{snap();const d=D();d.cols.push('Column '+(d.cols.length+1));d.rows.forEach(r=>r.push(''));save();tbl()};
+const cpy=()=>{const d=D(),t=[d.cols,...d.rows].map(r=>r.map(v=>/[",\n]/.test(v)?'"'+String(v).replace(/"/g,'""')+'"':v).join(',')).join('\n');navigator.clipboard?.writeText(t).then(()=>alert('CSV copied to clipboard.'),()=>alert('Copy blocked by browser.'))};
+function pasteIt(){const a=csv($('#pt').value);if(a.length<2)return alert('Paste at least a header row and one data row.');mk($('#pn').value||'Pasted data',a[0],a.slice(1));go('analyze')}
+function blank(){mk('Untitled table',['A','B','C'],[['','',''],['','','']]);go('data')}
+function samp(k){const[h,r]=SAMPLES[k]();mk(k,h,r,'Sample dataset');go('analyze')}
+V.clean=()=>{const d=D();if(!d)return cap();const I=info(d),dp=dups(d),emp=I.filter(c=>!c.n),out=I.reduce((a,c)=>a+(c.out?c.out.length:0),0),ws=d.rows.flat().filter(v=>typeof v=='string'&&v!==v.trim()).length;
+return`<h1>Cleaning Studio</h1><div class="sub">Detected issues for “${E(d.name)}”. Nothing changes until you click an action, and every step can be undone.</div>
+<div class="grid"><div class="kpi"><b>${I.reduce((a,c)=>a+c.miss,0)}</b><span>Missing cells</span></div><div class="kpi"><b>${dp}</b><span>Duplicate rows</span></div><div class="kpi"><b>${emp.length}</b><span>Empty columns</span></div><div class="kpi"><b>${out}</b><span>Outliers</span></div><div class="kpi"><b>${ws}</b><span>Whitespace issues</span></div><div class="kpi"><b>${quality(d,I)}</b><span>Quality score</span></div></div>
+<div class="card"><div class="row"><button class="b p" onclick="cl('all')">Clean data (all safe steps)</button><button class="b" onclick="cl('dup')">Remove duplicates</button><button class="b" onclick="cl('fill')">Fill missing (mean / mode)</button><button class="b" onclick="cl('trim')">Trim & convert types</button><button class="b" onclick="cl('empty')">Drop empty columns</button><button class="b" onclick="cl('out')">Remove outlier rows</button></div>
+<div class="row"><select id="sc">${d.cols.map((c,j)=>`<option value="${j}">${E(c)}</option>`).join('')}</select><button class="b" onclick="srt(1)">Sort ↑</button><button class="b" onclick="srt(-1)">Sort ↓</button><span class="mut">|</span><button class="b" onclick="undo()">↶ Undo (${U.length})</button><button class="b" onclick="redo()">↷ Redo (${R.length})</button><button class="b" onclick="rst()">Reset to original</button></div></div>
+<div class="card"><h2>Column report</h2><div class="tw"><table><tr><th>Column</th><th>Type</th><th>Missing</th><th>Unique</th><th>Outliers</th></tr>${I.map(c=>`<tr><td>${E(c.c)}</td><td><span class="tag">${c.t}</span></td><td class="${c.miss?'bad':''}">${c.miss}</td><td>${c.uniq}</td><td>${c.out?c.out.length:'–'}</td></tr>`).join('')}</table></div></div>
+<div class="card"><h2>Before vs after</h2><p class="mut">Original: ${JSON.parse(d.orig).rows.length} rows · Current: ${d.rows.length} rows (v${d.ver})</p></div>`};
+function cl(k){const d=D();snap();let I=info(d);
+if(k=='trim'||k=='all'){d.rows=d.rows.map(r=>r.map((v,j)=>typeof v=='string'?(I[j].t=='num'&&!isNaN(N(v))&&v.trim()!==''?N(v):v.trim()):v))}
+if(k=='dup'||k=='all'){const s=new Set();d.rows=d.rows.filter(r=>{const x=JSON.stringify(r);return s.has(x)?false:(s.add(x),true)})}
+if(k=='fill'||k=='all'){I=info(d);d.rows.forEach(r=>I.forEach(c=>{if(isE(r[c.j])&&c.n){r[c.j]=c.t=='num'?+c.mean.toFixed(2):c.t=='cat'?c.top[0][0]:r[c.j]}}))}
+if(k=='out'){I=info(d);const bad=new Set(I.flatMap(c=>c.out||[]));d.rows=d.rows.filter((_,i)=>!bad.has(i))}
+if(k=='empty'||k=='all'){I=info(d);const keep=I.filter(c=>c.n).map(c=>c.j);d.cols=keep.map(j=>d.cols[j]);d.rows=d.rows.map(r=>keep.map(j=>r[j]))}
+d.ver++;save();render()}
+function srt(s){snap();const j=+$('#sc').value;D().rows.sort((a,b)=>{const x=N(a[j]),y=N(b[j]);return(Number.isFinite(x)&&Number.isFinite(y)?x-y:String(a[j]).localeCompare(String(b[j])))*s});save();render()}
+const undo=()=>{if(!U.length)return;R.push(JSON.stringify({cols:D().cols,rows:D().rows}));setSnap(U.pop());render()},redo=()=>{if(!R.length)return;U.push(JSON.stringify({cols:D().cols,rows:D().rows}));setSnap(R.pop());render()},rst=()=>{snap();setSnap(D().orig);D().ver++;render()};
+V.analyze=()=>{const d=D();if(!d)return cap();const I=info(d),nc=I.filter(c=>c.t=='num'),{nc:k,M}=corr(d,I),t=trend(d,I);
+return`<h1>AI Analysis</h1><div class="sub">${E(d.name)} · automatic analysis. Findings are calculated from your data; predictions are labelled.</div>
+<div class="card"><h2>Insights</h2><ul>${insights(d,I).map(x=>`<li>${E(x)}</li>`).join('')}</ul></div>
+<div class="card"><h2>Descriptive statistics</h2><div class="tw"><table><tr><th>Column</th><th>Mean</th><th>Median</th><th>Mode</th><th>Std dev</th><th>Variance</th><th>Min</th><th>Q1</th><th>Q3</th><th>Max</th></tr>${nc.map(c=>`<tr><td>${E(c.c)}</td><td>${f(c.mean)}</td><td>${f(c.med)}</td><td>${f(c.mode)}</td><td>${f(c.sd)}</td><td>${f(c.sd**2)}</td><td>${f(c.min)}</td><td>${f(c.q1)}</td><td>${f(c.q3)}</td><td>${f(c.max)}</td></tr>`).join('')}</table></div><p class="mut">Std dev shows how spread out values are; Q1/Q3 mark the middle 50% of values.</p></div>
+${k.length>1?`<div class="card"><h2>Correlation matrix</h2><div class="tw"><table><tr><th></th>${k.map(c=>`<th>${E(c.c)}</th>`).join('')}</tr>${M.map((r,i)=>`<tr><th>${E(k[i].c)}</th>${r.map(v=>`<td style="background:${v>=0?'rgba(47,107,255,':'rgba(229,72,77,'}${Math.min(.8,Math.abs(v||0)*.8)})">${f(v)}</td>`).join('')}</tr>`).join('')}</table></div><p class="mut">Values near +1 or −1 mean variables move together or oppositely.</p></div>`:''}
+${t?`<div class="card"><h2>Trend & forecast</h2><p>${E(t.y.c)} by ${E(t.dt.c)}: slope ${f(t.b)} per period, R² ${f(t.r2)}. <span class="tag">Prediction</span> ${t.next.map(f).join(' → ')}</p><div class="cv"><canvas id="tc"></canvas></div></div>`:''}
+${I.filter(c=>c.t=='cat'&&c.uniq<=15).slice(0,3).map(c=>`<div class="card"><h2>${E(c.c)} · value counts</h2><div class="tw"><table>${c.top.slice(0,8).map(([v,n])=>`<tr><td>${E(v)}</td><td>${n}</td><td>${(n/c.n*100).toFixed(1)}%</td></tr>`).join('')}</table></div></div>`).join('')}`};
+A.analyze=()=>{const d=D();if(!d)return;const t=trend(d,info(d));if(!t)return;const L=t.g.map(x=>x[0]).concat(['+1','+2','+3']);
+charts.push(new Chart($('#tc'),{type:'line',data:{labels:L,datasets:[{label:'Actual',data:t.g.map(x=>x[1]),borderColor:'#2f6bff',tension:.3},{label:'Linear fit / forecast',data:L.map((_,i)=>t.a+t.b*i),borderColor:'#8b4dff',borderDash:[6,4],pointRadius:0}]},options:{maintainAspectRatio:false}}))};
+V.viz=()=>{const d=D();if(!d)return cap();const o=d.cols.map((c,j)=>`<option value="${j}">${E(c)}</option>`).join('');
+return`<h1>Visualization Studio</h1><div class="sub">Charts use your real values. Hover for tooltips; click legend items to filter.</div><div class="card"><div class="row"><select id="ct"><option>bar</option><option>line</option><option>pie</option><option>doughnut</option><option>scatter</option><option>histogram</option></select>X <select id="cx">${o}</select>Y <select id="cy">${o}</select><select id="ca"><option value="sum">sum</option><option value="mean">mean</option><option value="count">count</option><option value="max">max</option></select><input id="cn" placeholder="Chart title"><button class="b p" onclick="draw()">Draw</button></div><div class="cv"><canvas id="cv"></canvas></div><p class="mut" id="ad"></p></div>`};
+A.viz=()=>{const d=D();if(!d)return;const I=info(d),x=I.find(c=>c.t!='num')||I[0],y=I.find(c=>c.t=='num')||I[0];$('#cx').value=x.j;$('#cy').value=y.j;$('#ct').value=x.t=='date'?'line':'bar';$('#ad').textContent=`Suggestion: ${x.t=='date'?'line chart':'bar chart'} of ${y.c} by ${x.c}; try scatter with two numeric columns or a histogram for distributions.`;draw()};
+function chartOn(cv,d,type,xi,yi,agg,title){const P=['#2f6bff','#8b4dff','#00b8d9','#12a594','#f5a524','#e5484d','#7c8cff','#46d9a8'];let cfg;
+if(type=='scatter'){const p=d.rows.map(r=>({x:N(r[xi]),y:N(r[yi])})).filter(q=>Number.isFinite(q.x)&&Number.isFinite(q.y));cfg={type,data:{datasets:[{label:d.cols[yi]+' vs '+d.cols[xi],data:p,backgroundColor:'#2f6bff99'}]},options:{scales:{x:{title:{display:true,text:d.cols[xi]}},y:{title:{display:true,text:d.cols[yi]}}}}}}
+else if(type=='histogram'){const v=d.rows.map(r=>N(r[xi])).filter(Number.isFinite);if(!v.length)return null;const mn=Math.min(...v),mx=Math.max(...v),b=Math.min(12,Math.ceil(Math.sqrt(v.length))),w=(mx-mn)/b||1,c=Array(b).fill(0);v.forEach(x=>c[Math.min(b-1,Math.floor((x-mn)/w))]++);cfg={type:'bar',data:{labels:c.map((_,i)=>f(mn+i*w)+'–'+f(mn+(i+1)*w)),datasets:[{label:'Count of '+d.cols[xi],data:c,backgroundColor:'#8b4dff'}]}}}
+else{let g=group(d,xi,yi,agg);const dt=g.length&&g.every(q=>!isNaN(Date.parse(q[0]))&&/[-\/]/.test(q[0]));g=dt?g.sort((a,b)=>Date.parse(a[0])-Date.parse(b[0])):g.sort((a,b)=>b[1]-a[1]);g=g.slice(0,30);const pie=type=='pie'||type=='doughnut';
+cfg={type,data:{labels:g.map(q=>q[0]),datasets:[{label:agg+' of '+d.cols[yi],data:g.map(q=>q[1]),backgroundColor:pie?g.map((_,i)=>P[i%8]):'#2f6bff',borderColor:'#2f6bff',tension:.3}]}}}
+cfg.options=Object.assign({maintainAspectRatio:false,plugins:{title:{display:!!title,text:title}}},cfg.options||{});const c=new Chart(cv,cfg);charts.push(c);return c}
+function draw(){const d=D();charts.forEach(c=>c.destroy());charts=[];chartOn($('#cv'),d,$('#ct').value,+$('#cx').value,+$('#cy').value,$('#ca').value,$('#cn').value)}
+V.chat=()=>{const d=D();if(!d)return cap();return`<h1>AI Data Chat</h1><div class="sub">Answers are calculated from “${E(d.name)}”. This preview uses a rule-based engine; the full build routes to an LLM through the backend.</div><div class="card"><div class="msgs" id="ms"><div class="m a">Ask me about your data. I only report what can be calculated from it.</div></div><div class="row" id="sg"></div><div class="row"><input id="ci" style="flex:1;min-width:200px" placeholder="e.g. Which ${E(d.cols[1])} has the highest ${E(d.cols[d.cols.length-1])}?"><button class="b p" onclick="ask()">Ask</button></div></div>`};
+A.chat=()=>{const d=D();if(!d)return;const I=info(d),n=I.find(c=>c.t=='num'),c=I.find(c=>c.t=='cat');$('#sg').innerHTML=['What are the main findings?','Find unusual values',n?`What is the average ${n.c}?`:'',c&&n?`Which ${c.c} has the highest ${n.c}? chart`:'','What patterns exist?'].filter(Boolean).map(q=>`<button class="b" onclick="$('#ci').value=this.textContent;ask()">${E(q)}</button>`).join('');$('#ci').onkeydown=e=>{if(e.key=='Enter')ask()}};
+function ask(){const d=D(),q=$('#ci').value.trim();if(!q)return;$('#ci').value='';const I=info(d),L=q.toLowerCase(),ms=$('#ms'),add=(h,c)=>{const e=document.createElement('div');e.className='m '+c;e.innerHTML=h;ms.appendChild(e);ms.scrollTop=1e9;return e};add(E(q),'u');
+const mc=I.filter(c=>L.includes(c.c.toLowerCase())),mn=mc.filter(c=>c.t=='num'),mcat=mc.filter(c=>c.t!='num'),T=(h,rows)=>`<div class="tw"><table><tr>${h.map(x=>`<th>${E(x)}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(x=>`<td>${E(x)}</td>`).join('')}</tr>`).join('')}</table></div>`;let a;
+const vals=[];I.filter(c=>c.t=='cat').forEach(c=>c.top?.forEach(([v])=>{if(L.includes(String(v).toLowerCase())&&String(v).length>1)vals.push([c,v])}));
+if(/outlier|unusual|anomal/.test(L)){const o=I.filter(c=>c.out?.length);a=o.length?o.map(c=>`<b>${E(c.c)}</b>: ${c.out.length} outlier(s) outside ${f(c.lo)}–${f(c.hi)}: ${c.out.slice(0,5).map(i=>f(N(d.rows[i][c.j]))).join(', ')}`).join('<br>'):'No outliers found with the IQR rule.'}
+else if(vals.length>=2&&I.some(c=>c.t=='num')){const y=mn[0]||I.find(c=>c.t=='num');a=`Comparing average ${E(y.c)}:`+T(['Group','Rows','Average '+y.c],vals.slice(0,4).map(([c,v])=>{const r=d.rows.filter(r=>r[c.j]==v).map(r=>N(r[y.j])).filter(Number.isFinite);return[`${c.c}: ${v}`,r.length,f(r.reduce((s,x)=>s+x,0)/r.length)]}))}
+else if(/correl|relationship|pattern/.test(L)){const{nc:k,M}=corr(d,I),p=[];M.forEach((r,i)=>r.forEach((v,j)=>j>i&&p.push([k[i].c,k[j].c,v])));p.sort((x,y)=>Math.abs(y[2])-Math.abs(x[2]));a=p.length?'Strongest relationships (not proof of causation):'+T(['A','B','r'],p.slice(0,5).map(x=>[x[0],x[1],f(x[2])])):'Need at least two numeric columns.'}
+else if(/finding|summar|recommend|insight/.test(L)){a='<ul>'+insights(d,I).map(x=>`<li>${E(x)}</li>`).join('')+'</ul>'}
+else if(mn.length&&/average|mean|avg|total|sum|max|min|median|highest|lowest/.test(L)&&!mcat.length){a=T(['Column','Mean','Median','Sum','Min','Max'],mn.map(c=>[c.c,f(c.mean),f(c.med),f(c.sum),f(c.min),f(c.max)]))}
+else if((mcat.length||/highest|lowest|best|top|worst|bottom/.test(L))&&I.some(c=>c.t=='num')){const x=mcat[0]||I.find(c=>c.t=='cat'),y=mn[0]||I.filter(c=>c.t=='num').pop();if(!x)a='No categorical column to group by.';else{const g=group(d,x.j,y.j,/average|mean/.test(L)?'mean':'sum').sort((p,q)=>p[1]-q[1]);const low=/lowest|worst|bottom/.test(L);const s=low?g:g.slice().reverse();a=`${low?'Lowest':'Highest'}: <b>${E(s[0][0])}</b> (${f(s[0][1])}) in total ${E(y.c)} by ${E(x.c)}.`+T([x.c,y.c],s.slice(0,8).map(r=>[r[0],f(r[1])]));if(/chart|plot|graph|show/.test(L)){const e=add(a+'<div class="cv"><canvas></canvas></div>','a');chartOn(e.querySelector('canvas'),d,'bar',x.j,y.j,'sum','');return}}}
+else a='I can answer questions about averages, highest/lowest by category, comparisons (“A vs B”), outliers, correlations, and findings. Try mentioning a column name.';
+add(a,'a')}
+V.report=()=>{const d=D();if(!d)return cap();return`<h1>Report Generator</h1><div class="sub">Generates a plain-language report from your data. Use Print to save as PDF.</div><div class="row noprint"><button class="b p" onclick="rep()">Generate report</button><button class="b" onclick="window.print()">Print / Save PDF</button></div><div id="rp"></div>`};
+function rep(){const d=D(),I=info(d),nc=I.filter(c=>c.t=='num'),q=quality(d,I),ins=insights(d,I),x=I.find(c=>c.t!='num')||I[0],y=nc[0];
+$('#rp').innerHTML=`<div class="card"><h2>${E(d.name)} — Data Analysis Report</h2><p class="mut">Generated ${new Date().toLocaleString()}</p>
+<h2>1. Executive summary</h2><p>The dataset contains ${d.rows.length} records across ${d.cols.length} fields with a data quality score of ${q}/100. ${E(ins.slice(3,5).join(' ').replace(/Finding: /g,''))}</p>
+<h2>2. Dataset overview</h2><div class="tw"><table><tr><th>Column</th><th>Type</th><th>Missing</th><th>Unique</th></tr>${I.map(c=>`<tr><td>${E(c.c)}</td><td>${c.t}</td><td>${c.miss}</td><td>${c.uniq}</td></tr>`).join('')}</table></div>
+<h2>3. Data quality</h2><p>Missing cells: ${I.reduce((a,c)=>a+c.miss,0)} · Duplicate rows: ${dups(d)} · Outliers: ${nc.reduce((a,c)=>a+c.out.length,0)}.</p>
+<h2>4. Key findings & anomalies</h2><ul>${ins.map(i=>`<li>${E(i)}</li>`).join('')}</ul>
+<h2>5. Key statistics</h2><div class="tw"><table><tr><th>Column</th><th>Mean</th><th>Median</th><th>Std dev</th><th>Min</th><th>Max</th></tr>${nc.map(c=>`<tr><td>${E(c.c)}</td><td>${f(c.mean)}</td><td>${f(c.med)}</td><td>${f(c.sd)}</td><td>${f(c.min)}</td><td>${f(c.max)}</td></tr>`).join('')}</table></div>
+${y?`<h2>6. Visualization</h2><div class="cv"><canvas id="rc"></canvas></div>`:''}
+<h2>7. Recommendations</h2><ul><li>Review and resolve the data quality issues listed above before relying on totals.</li><li>Investigate flagged outliers: they may be errors or genuine events.</li><li>Treat forecasts as indicative only; they use a simple linear trend.</li></ul>
+<h2>8. Limitations & assumptions</h2><p>Outliers use the 1.5×IQR rule. Correlations show association, not cause. Column types are inferred automatically. Results reflect only the data provided.</p>
+<h2>9. Conclusion</h2><p>The analysis above is calculated directly from the supplied dataset and should be validated against domain knowledge before decisions are made.</p></div>`;
+if(y)chartOn($('#rc'),d,x.t=='date'?'line':'bar',x.j,y.j,'sum','')}
+render();
+</script></body></html>
